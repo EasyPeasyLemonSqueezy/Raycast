@@ -54,11 +54,16 @@ Volume::~Volume() noexcept
 	delete[] data;
 }
 
-const color & Volume::get(float x, float y, float z)
+const color & Volume::get(float xc, float yc, float zc)
 {
-	int xi = round((x - xmin) / dx), yi = round((y - ymin) / dy), zi = round((z - zmin) / dz);
+	int xi = round((xc - xmin) / dx), yi = round((yc - ymin) / dy), zi = round((zc - zmin) / dz);
 
-	return data[zi * this->x * this->y + yi * this->x + xi].color;
+	int i = zi * x * y + yi * x + xi;
+	if (i < 0 || i > x * y * z - 1) {
+		throw new exception("fuck");
+	}
+
+	return data[i].color;
 }
 
 const color & Volume::operator[](const tuple<float, float, float>& coord)
