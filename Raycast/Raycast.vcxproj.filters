@@ -4,10 +4,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="DebugLog.cpp" />
+    <ClCompile Include="alphaBlend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="DebugLog.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="alphaBlend.h" />
   </ItemGroup>
 </Project>

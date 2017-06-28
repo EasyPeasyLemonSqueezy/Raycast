@@ -33,7 +33,7 @@ void display()
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
-	glutInitContextVersion(4, 5);
+	glutInitContextVersion(3, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitDisplayMode(GLUT_RGBA);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);

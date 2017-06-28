@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="alphaBlend.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="alphaBlend.h" />
     <ClInclude Include="DebugLog.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Texture.h" />
