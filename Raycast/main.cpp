@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 	glewInit();
 
 	createPixels();
-	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, GL_UNSIGNED_BYTE, pixels);
+	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, pixels);
 
 	// Дебаг информация на всякий случай
 	glEnable(GL_DEBUG_OUTPUT);
