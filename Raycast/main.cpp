@@ -46,10 +46,11 @@ int main(int argc, char* argv[])
 	createPixels();
 	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, pixels);
 
-	// Дебаг информация на всякий случай
+#ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(debugCallback, NULL);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+#endif
 
 	glutMainLoop();
 

@@ -21,9 +21,9 @@ struct Texture
 		const float buffer[16] =
 		{
 			-1.0f, -1.0f,  0.0f, 0.0f,
-			1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
 			-1.0f,  1.0f,  0.0f, 1.0f,
-			1.0f,  1.0f,  1.0f, 1.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f,
 		};
 
 		glGenVertexArrays(1, &vao);
