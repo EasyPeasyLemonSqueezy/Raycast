@@ -4,6 +4,8 @@
 
 using namespace std;
 
+#include <iostream>
+
 Volume::Volume(int x, int y, int z, string fname) noexcept
 	: x(x), y(y), z(z), xmin(std::numeric_limits<float>::infinity()), ymin(xmin), zmin(xmin)
 {
@@ -13,6 +15,11 @@ Volume::Volume(int x, int y, int z, string fname) noexcept
 	ifstream input(fname, ios::in);
 	float xc, yc, zc, color, opacity;
 
+	if (input.good())
+	{
+		std::cout << "GOOD\n";
+	}
+
 	int i = 0;
 	while (input >> xc >> yc >> zc >> color >> opacity) {
 		xmin = xc < xmin ? xc : xmin;
@@ -20,6 +27,11 @@ Volume::Volume(int x, int y, int z, string fname) noexcept
 		zmin = zc < zmin ? zc : zmin;
 
 		data[i++] = voxel{ xc, yc, zc, color, opacity };
+
+		if (i % 50000 == 0)
+		{
+			cout << "IIIIII\n";
+		}
 	}
 
 	input.close();
@@ -54,14 +66,22 @@ Volume::~Volume() noexcept
 	delete[] data;
 }
 
-const color & Volume::get(float xc, float yc, float zc)
+const color & Volume::get(float xc, float yc, float zc) const
 {
 	int xi = round((xc - xmin) / dx), yi = round((yc - ymin) / dy), zi = round((zc - zmin) / dz);
 
-	int i = zi * x * y + yi * x + xi;
-	if (i < 0 || i > x * y * z - 1) {
-		throw new exception("fuck");
+	if (xi >= 512 || xi < 0 || yi >= 512 || yi < 0 || zi >= 17 || zi < 0)
+	{
+		throw std::exception("FUCK YOU AND FUCK YOU AND FUCK ALL YOUR FAMILY MOTHERFUCKA");
 	}
+
+	int i = zi * x * y + yi * x + xi;
+
+	if (i < 0 || i >= 512 * 512 * 17)
+	{
+		throw std::exception("FUCK YOU AND FUCK YOU AND FUCK ALL YOUR FAMILY MOTHERFUCKA");
+	}
+
 
 	return data[i].color;
 }

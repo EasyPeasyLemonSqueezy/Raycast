@@ -4,13 +4,12 @@
 #include <string>
 #include <tuple>
 
-
 class Volume
 {
 public:
 	Volume(int, int, int, std::string) noexcept;
 	~Volume() noexcept;
-	const color & get(float, float, float);
+	const color & get(float, float, float) const;
 	const color & operator[] (const std::tuple<float, float, float> &);
 
 	const int x, y, z;
