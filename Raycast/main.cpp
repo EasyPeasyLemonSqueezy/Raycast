@@ -11,19 +11,6 @@ const int SCREEN_HEIGHT = 256;
 GLubyte* pixels;
 Texture* texture;
 
-void createPixels()
-{
-	pixels = new GLubyte[SCREEN_HEIGHT * SCREEN_WIDTH * 3];
-
-	for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH * 3; i += 3)
-	{
-		int color = rand() % 255;
-		pixels[i] = color;
-		pixels[i + 1] = color;
-		pixels[i + 2] = color;
-	}
-}
-
 void raycast(const Volume& volume)
 {
 	int k = 0;
