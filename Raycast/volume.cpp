@@ -1,52 +1,23 @@
-#include "volume.h"
+#include "volume.hpp"
+#include "header.hpp"
 #include <cmath>
 #include <fstream>
 
 using namespace std;
 
-Volume::Volume(int x, int y, int z, string fname) noexcept
-	: x(x), y(y), z(z), xmin(std::numeric_limits<float>::infinity()), ymin(xmin), zmin(xmin)
+#include <iostream>
+
+Volume::Volume(string fname) noexcept
 {
-	data = new voxel[x * y * z];
+	ifstream input(fname, ios::in | ios::binary);
 
-	// Input
-	ifstream input(fname, ios::in);
-	float xc, yc, zc, color, opacity;
+	// check input
 
-	int i = 0;
-	while (input >> xc >> yc >> zc >> color >> opacity) {
-		xmin = xc < xmin ? xc : xmin;
-		ymin = yc < ymin ? yc : ymin;
-		zmin = zc < zmin ? zc : zmin;
+	input.read(reinterpret_cast<char *>(&info), sizeof(header));
 
-		data[i++] = voxel{ xc, yc, zc, color, opacity };
-	}
+	data = new color[info.volume()];
 
-	input.close();
-
-	//// Calculation
-	//float dx = .0, dy = .0;
-
-	//for (int i = 0; i < z; ++i) {
-	//	// it's not actually correct but I don't care
-	//	for (int iz = 1; iz < x * y; ++iz) {
-	//		dx += data[i * x * y + iz].x;
-	//		dy += data[i * x * y + iz].y;
-	//	}
-	//}
-
-	//dx /= x * y * z;
-	//dy /= x * y * z;
-
-	//// Correction (only x and y)
-	//for (int i = 0; i < x * y * z; ++i) {
-	//	data[i].x -= dx;
-	//	data[i].y -= dy;
-	//}
-
-	dx = data[1].x - data[0].x;
-	dy = data[x].y - data[0].y;
-	dz = data[x * y].z - data[0].z;
+	input.read(reinterpret_cast<char *>(data), sizeof(color) * info.volume());
 }
 
 Volume::~Volume() noexcept
@@ -54,19 +25,18 @@ Volume::~Volume() noexcept
 	delete[] data;
 }
 
-const color & Volume::get(float xc, float yc, float zc)
+optional<color> Volume::get(float xc, float yc, float zc) const noexcept
 {
-	int xi = round((xc - xmin) / dx), yi = round((yc - ymin) / dy), zi = round((zc - zmin) / dz);
+	auto xi = static_cast<uint64_t>(round((xc - info.min.x) / info.d.x)),
+	     yi = static_cast<uint64_t>(round((yc - info.min.y) / info.d.y)),
+	     zi = static_cast<uint64_t>(round((zc - info.min.z) / info.d.z));
 
-	int i = zi * x * y + yi * x + xi;
-	if (i < 0 || i > x * y * z - 1) {
-		throw new exception("fuck");
+	if (xi >= info.x || xi < 0 ||
+		yi >= info.y || yi < 0 ||
+		zi >= info.z || zi < 0) {
+		return {};
 	}
 
-	return data[i].color;
-}
-
-const color & Volume::operator[](const tuple<float, float, float>& coord)
-{
-	return get(std::get<0>(coord), std::get<1>(coord), std::get<2>(coord));
+	const size_t i = (zi * info.x * info.y) + (yi * info.x) + xi;
+	return make_optional(data[i]);
 }
