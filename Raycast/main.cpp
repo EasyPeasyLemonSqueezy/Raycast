@@ -26,12 +26,18 @@ void createPixels()
 
 void raycast(const Volume& volume)
 {
-	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 	int k = 0;
+	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 
-	glm::vec3 eye(0.0f, 0.0f, -100.0f);
-	float dz = 0.625f;
-	const float zmin = 5.625;
+	const float zMin = 5.625;
+	const float zMax = 15.625;
+	const float dz = 0.625f;
+
+	const float eyeDistance = 100.0f;
+	const float monitorDistance = 50.0f;
+
+	const glm::vec3 eye(0.0f, 0.0f, -eyeDistance);
+
 #pragma omp parallel
 #pragma omp for
 	for (int i = -SCREEN_HEIGHT / 2; i < SCREEN_HEIGHT / 2; ++i)
@@ -40,23 +46,19 @@ void raycast(const Volume& volume)
 #pragma omp for
 		for (int j = -SCREEN_WIDTH / 2; j < SCREEN_WIDTH / 2; ++j)
 		{
-			/*glm::vec3 pixel(i, j, -50.0f);
+			const glm::vec3 pixel(j, i, -monitorDistance);
 			glm::vec3 ray = pixel - eye;
-			glm::normalize(ray);*/
+			ray = glm::normalize(ray);
 
-			float y = i * ((zmin + 100) / 50);
-			float x = j * ((zmin + 100) / 50);
-			float z = zmin;
-
-			float dx = j * ((zmin + 100 + dz) / 50) - x;
-			float dy = i * ((zmin + 100 + dz) / 50) - y;
+			glm::vec3 position = eye + ray * ((eyeDistance + zMin) / ray.z);
+			const glm::vec3 step = ray * (dz / ray.z);
 
 			std::stack<color> points;
-			for (float z = zmin; z <= 15.625; z += dz)
+			for (; position.z <= zMax; position += step)
 			{
 				color c;
 				try {
-					c = volume.get(x, y, z);
+					c = volume.get(position.x, position.y, position.z);
 					points.push(c);
 				}
 				catch (const std::exception &e) {
@@ -65,7 +67,7 @@ void raycast(const Volume& volume)
 			}
 
 			auto rc = blend(points);
-			
+
 			pixels[k++] = rc;
 			pixels[k++] = rc;
 			pixels[k++] = rc;
