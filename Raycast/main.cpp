@@ -12,8 +12,8 @@
 
 using namespace std;
 
-const int SCREEN_WIDTH = 16384;
-const int SCREEN_HEIGHT = 16384;
+const int SCREEN_WIDTH = 512;
+const int SCREEN_HEIGHT = 512;
 
 Volume volume = Volume("");
 GLubyte* pixels;
@@ -23,7 +23,7 @@ void raycast(const Volume& volume)
 {
 	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 
-	const float eye_position = -200.0f;
+	const float eye_position = -100.0f;
 	const float monitor_position = -50.0f;
 	const float to_volume = volume.info.min.z - eye_position;
 	const float to_monitor = monitor_position - eye_position;
