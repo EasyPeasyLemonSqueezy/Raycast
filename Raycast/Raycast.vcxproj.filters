@@ -1,18 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Shaders.cpp" />
-    <ClCompile Include="DebugLog.cpp" />
-    <ClCompile Include="alphaBlend.cpp" />
-    <ClCompile Include="volume.cpp" />
+    <ClCompile Include="alphaBlend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="volume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shaders.h" />
-    <ClInclude Include="DebugLog.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="alphaBlend.h" />
-    <ClInclude Include="volume.h" />
-    <ClInclude Include="voxel.h" />
+    <ClInclude Include="DebugLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="alphaBlend.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="volume.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ea38f4d4-dce9-43d0-bd2a-a6f539762c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2a0380c3-e268-4c39-bcc4-9b468fc28acf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

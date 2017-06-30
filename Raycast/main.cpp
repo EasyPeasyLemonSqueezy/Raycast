@@ -1,71 +1,89 @@
-#include "Texture.h"
+#include "alphaBlend.hpp"
 #include "DebugLog.h"
-#include "volume.h"
+#include "Texture.h"
+#include "volume.hpp"
+
+#include <chrono>
 #include <iostream>
+#include <future>
+#include <vector>
 
 #include <glm\glm.hpp>
 
-const int SCREEN_WIDTH = 256;
-const int SCREEN_HEIGHT = 256;
+using namespace std;
 
+const int SCREEN_WIDTH = 16384;
+const int SCREEN_HEIGHT = 16384;
+
+Volume volume = Volume("");
 GLubyte* pixels;
 Texture* texture;
 
 void raycast(const Volume& volume)
 {
-	int k = 0;
 	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 
-	const float zMin = 5.625;
-	const float zMax = 15.625;
-	const float dz = 0.625f;
+	const float eye_position = -200.0f;
+	const float monitor_position = -50.0f;
+	const float to_volume = volume.info.min.z - eye_position;
+	const float to_monitor = monitor_position - eye_position;
 
-	const float eyeDistance = 100.0f;
-	const float monitorDistance = 50.0f;
+	vector<std::future<void>> futures;
+	futures.reserve(SCREEN_HEIGHT);
 
-	const glm::vec3 eye(0.0f, 0.0f, -eyeDistance);
-
-#pragma omp parallel
-#pragma omp for
-	for (int i = -SCREEN_HEIGHT / 2; i < SCREEN_HEIGHT / 2; ++i)
+	auto start = chrono::steady_clock::now();
+	for (int y = -SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT / 2; ++y)
 	{
-		std::cout << i << std::endl;
-#pragma omp for
-		for (int j = -SCREEN_WIDTH / 2; j < SCREEN_WIDTH / 2; ++j)
-		{
-			const glm::vec3 pixel(j, i, -monitorDistance);
-			glm::vec3 ray = pixel - eye;
-			ray = glm::normalize(ray);
+		futures.push_back(std::async(std::launch::async, [&, y] {
+			vector<color> points;
+			points.reserve(volume.info.z);
 
-			glm::vec3 position = eye + ray * ((eyeDistance + zMin) / ray.z);
-			const glm::vec3 step = ray * (dz / ray.z);
+			for (int x = -SCREEN_WIDTH / 2; x < SCREEN_WIDTH / 2; ++x) {
+				glm::vec3 ray(x, y, to_monitor);
+				ray *= to_volume / to_monitor;
 
-			std::stack<color> points;
-			for (; position.z <= zMax; position += step)
-			{
-				color c;
-				try {
-					c = volume.get(position.x, position.y, position.z);
-					points.push(c);
+				const glm::vec3 step = ray * (volume.info.d.z / to_volume);
+				ray.z = volume.info.min.z; // eye -> ray
+
+				for (uint64_t sample = 0; sample < volume.info.z; ray += step, ++sample) {
+					if (auto c = volume.get(ray.x, ray.y, ray.z)) {
+						points.push_back(c.value());
+
+						if (c.value().opacity == 1) {
+							break;
+						}
+					}
+					else {
+						break;
+					}
 				}
-				catch (const std::exception &e) {
-					break;
-				}
+
+				const auto rc = blend(points);
+				const ptrdiff_t index = 3 * (SCREEN_WIDTH * (y + SCREEN_HEIGHT / 2) + x + SCREEN_WIDTH / 2);
+
+				pixels[index] = rc;
+				pixels[index + 1] = rc;
+				pixels[index + 2] = rc;
+			
+				points.clear();
 			}
-
-			auto rc = blend(points);
-
-			pixels[k++] = rc;
-			pixels[k++] = rc;
-			pixels[k++] = rc;
-		}
+		}));
 	}
+
+	for (const auto &future : futures) {
+		future.wait();
+	}
+
+	auto end = chrono::steady_clock::now();
+	const auto total = chrono::duration <double, milli>(end - start).count();
+	cout << "time: " << total << endl;
 }
 
 void display()
 {
+	static int delta = 0;
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.7, 0.0, 1.0, 1.0);
+	glClearColor(.7f, .0f, 1.f, 1.f);
 
 	texture->draw();
 
@@ -81,7 +99,7 @@ int main(int argc, char* argv[])
 	glutInitContextVersion(3, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glutInitWindowSize(512, 512);
 	glutCreateWindow("Volume Ray Casting");
 
 	glutDisplayFunc(display);
@@ -95,9 +113,6 @@ int main(int argc, char* argv[])
 #endif
 	std::cout << "Start loaded\n";
 
-	//createPixels();
-	Volume volume(512, 512, 17, "C:\\Users\\Obir\\Desktop\\notes_c.txt");
-	std::cout << "Volume loaded\n";
 	raycast(volume);
 	std::cout << "Raycast\n";
 	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, pixels);

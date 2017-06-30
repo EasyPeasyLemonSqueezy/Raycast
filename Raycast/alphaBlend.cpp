@@ -1,16 +1,15 @@
-#include "alphaBlend.h"
+#include "alphaBlend.hpp"
+
+using namespace std;
 
 // top - last point
-float blend(std::stack<color> points)
+uint8_t blend(const vector<color> &points)
 {
 	float hue = 0; // Background
 
-	while (!points.empty()) {
-		hue *= 1 - points.top().opacity;
-		hue += points.top().hue;
-
-		points.pop();
+	for (auto &it = points.rbegin(); it != points.rend(); ++it) {
+		hue = it->hue * it->opacity + hue * (1 - it->opacity);
 	}
 
-	return hue;
+	return static_cast<uint8_t>(hue);
 }
