@@ -45,11 +45,11 @@ void main()
 	ray.z = min.z;
 
 	int layer;
-	for (layer = 0; layer < z; ++layer)
+	for (layer = 0; layer < z; ++layer, ray += delta)
 	{
 		int xi = int(round((ray.x - min.x) / d.x));
-		int yi = int(round((ray.x - min.x) / d.x));
-		int zi = int(round((ray.x - min.x) / d.x));
+		int yi = int(round((ray.y - min.y) / d.y));
+		int zi = int(round((ray.z - min.z) / d.z));
 
 		if (xi >= x || xi < 0 ||
 			yi >= y || yi < 0 ||
@@ -58,7 +58,7 @@ void main()
 			break;
 		}
 
-		const int i = (zi * x * y) + (yi + x) + xi;
+		const int i = (zi * x * y) + (yi * x) + xi;
 		
 		color c = color(opacities[i], hues[i]);
 		points[layer] = c;
@@ -67,16 +67,14 @@ void main()
 		{
 			break;
 		}
-
-		ray += delta;
 	}
 
 	float hue = 0;
-	for (int i = layer; i >= 0; i--)
+	for (int i = 0; i < layer; i++)
 	{
 		hue = points[i].hue * points[i].opacity + hue * (1 - points[i].opacity);
 	}
 
 	ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
-	imageStore(image, pixelCoords, vec4(hue, 0.0, 0.0, 1.0));
+	imageStore(image, pixelCoords, vec4(hue, hue, hue, 1.0));
 }

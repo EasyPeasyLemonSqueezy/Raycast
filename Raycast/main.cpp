@@ -89,7 +89,7 @@ void display()
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
-	glutInitContextVersion(3, 3);
+	glutInitContextVersion(4, 5);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitDisplayMode(GLUT_RGBA);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -125,11 +125,11 @@ int main(int argc, char* argv[])
 	glGenBuffers(2, &buffers[0]);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[0]);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.opacities, GL_STREAM_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.opacities, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[0]);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[1]);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.hues, GL_STREAM_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.hues, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[1]);
 
 	glUniform1i(glGetUniformLocation(computeShader.program, "x"), volume.info.x);
@@ -139,9 +139,12 @@ int main(int argc, char* argv[])
 	glUniform3f(glGetUniformLocation(computeShader.program, "min"), volume.info.min.x, volume.info.min.y, volume.info.min.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "max"), volume.info.max.x, volume.info.max.y, volume.info.max.z);
 
-
+	auto start = chrono::steady_clock::now();
 	glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	auto end = chrono::steady_clock::now();
+	const auto total = chrono::duration <double, milli>(end - start).count();
+	cout << "time: " << total << endl;
 	cout << "DONE" << endl;
 
 	glDeleteBuffers(2, &buffers[0]);
