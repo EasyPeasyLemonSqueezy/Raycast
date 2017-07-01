@@ -84,7 +84,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath);$(SolutionDir)Dependencies\include;$(SolutionDir)Converter</IncludePath>
     <LibraryPath>$(SolutionDir)Dependencies\lib\x64;$(LibraryPath)</LibraryPath>
-    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <SourcePath>$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
@@ -161,7 +161,6 @@
     <ClCompile Include="alphaBlend.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
   <ItemGroup>

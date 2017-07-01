@@ -1,7 +1,7 @@
 #include "alphaBlend.hpp"
-#include "DebugLog.h"
 #include "Texture.h"
 #include "volume.hpp"
+#include "DebugLog.h"
 
 #include <chrono>
 #include <iostream>
@@ -12,19 +12,18 @@
 
 using namespace std;
 
-const int SCREEN_WIDTH = 512;
-const int SCREEN_HEIGHT = 512;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 1024;
 
-Volume volume = Volume("");
 GLubyte* pixels;
 Texture* texture;
 
 void raycast(const Volume& volume)
 {
-	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+	pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT];
 
-	const float eye_position = -100.0f;
-	const float monitor_position = -50.0f;
+	const float eye_position = -500.0f;
+	const float monitor_position = 0.0f;
 	const float to_volume = volume.info.min.z - eye_position;
 	const float to_monitor = monitor_position - eye_position;
 
@@ -59,11 +58,9 @@ void raycast(const Volume& volume)
 				}
 
 				const auto rc = blend(points);
-				const ptrdiff_t index = 3 * (SCREEN_WIDTH * (y + SCREEN_HEIGHT / 2) + x + SCREEN_WIDTH / 2);
+				const ptrdiff_t index = SCREEN_WIDTH * (y + SCREEN_HEIGHT / 2) + x + SCREEN_WIDTH / 2;
 
 				pixels[index] = rc;
-				pixels[index + 1] = rc;
-				pixels[index + 2] = rc;
 			
 				points.clear();
 			}
@@ -81,16 +78,12 @@ void raycast(const Volume& volume)
 
 void display()
 {
-	static int delta = 0;
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(.7f, .0f, 1.f, 1.f);
 
 	texture->draw();
 
 	glFlush();
-
-	std::cout << "GO\n";
-
 }
 
 int main(int argc, char* argv[])
@@ -99,25 +92,60 @@ int main(int argc, char* argv[])
 	glutInitContextVersion(3, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(512, 512);
+	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Volume Ray Casting");
 
 	glutDisplayFunc(display);
 
 	glewInit();
 
+	/*Volume volume = Volume("D:\\Downloads\\notes_txt\\notes.txt.vd");
+	raycast(volume);
+*/
+
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(debugCallback, NULL);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+
+	std::cout << "OpenGL Debug enabled" << std::endl;
 #endif
-	std::cout << "Start loaded\n";
 
-	raycast(volume);
-	std::cout << "Raycast\n";
-	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, pixels);
-	std::cout << "Textur\n";
+	Shader computeShader("Shaders\\raycast.glsl");
+	glUseProgram(computeShader.program);
 
+	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
+	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program, NULL);
+	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	
+	Volume volume = Volume("D:\\Downloads\\notes_txt\\notes.txt.vd");
+	const unsigned int volumeSize = sizeof(float) * volume.info.volume();
+
+	GLuint buffers[2];
+	glGenBuffers(2, &buffers[0]);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[0]);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.opacities, GL_STREAM_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[0]);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[1]);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize, volume.hues, GL_STREAM_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[1]);
+
+	glUniform1i(glGetUniformLocation(computeShader.program, "x"), volume.info.x);
+	glUniform1i(glGetUniformLocation(computeShader.program, "y"), volume.info.y);
+	glUniform1i(glGetUniformLocation(computeShader.program, "z"), volume.info.z);
+	glUniform3f(glGetUniformLocation(computeShader.program, "d"), volume.info.d.x, volume.info.d.y, volume.info.d.z);
+	glUniform3f(glGetUniformLocation(computeShader.program, "min"), volume.info.min.x, volume.info.min.y, volume.info.min.z);
+	glUniform3f(glGetUniformLocation(computeShader.program, "max"), volume.info.max.x, volume.info.max.y, volume.info.max.z);
+
+
+	glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	cout << "DONE" << endl;
+
+	glDeleteBuffers(2, &buffers[0]);
+	
 	glutMainLoop();
 
 	delete texture;

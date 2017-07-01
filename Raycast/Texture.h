@@ -7,17 +7,15 @@
 
 struct Texture
 {
-	int width, height;
 	GLuint vao;
 	GLuint vbo;
 	GLuint textureId;
 	GLuint shaderProgram;
 
-	Texture(int width, int height, const void* pixels)
+	Texture(int width, int height, GLuint shaderProgram, const void* pixels)
 	{
-		this->width = width;
-		this->height = height;
-
+		this->shaderProgram = shaderProgram;
+		
 		const float buffer[16] =
 		{
 			-1.0f, -1.0f,  0.0f, 0.0f,
@@ -38,8 +36,6 @@ struct Texture
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(sizeof(float) * 2));
 
-		shaderProgram = createProgram("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
-
 		glGenTextures(1, &textureId);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 
@@ -48,15 +44,14 @@ struct Texture
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	}
 
 	~Texture()
 	{
-		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
+		glDeleteBuffers(1, &vbo);
 		glDeleteTextures(1, &textureId);
-		glDeleteProgram(shaderProgram);
 	}
 
 	void draw()

@@ -4,23 +4,15 @@
     <ClCompile Include="alphaBlend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DebugLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="volume.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DebugLog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DebugLog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -33,6 +25,7 @@
     <ClInclude Include="volume.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DebugLog.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
