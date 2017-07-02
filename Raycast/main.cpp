@@ -58,12 +58,14 @@ void raycast(const Volume& volume)
 					}
 				}
 
-				const auto rc = blend(points);
+				uint8_t r, g, b;
+				tie(r, g, b) = blend(points);
+
 				const ptrdiff_t index = 3 * (SCREEN_WIDTH * (y + SCREEN_HEIGHT / 2) + x + SCREEN_WIDTH / 2);
 
-				pixels[index] = rc;
-				pixels[index + 1] = rc;
-				pixels[index + 2] = rc;
+				pixels[index] = r;
+				pixels[index + 1] = g;
+				pixels[index + 2] = b;
 			
 				points.clear();
 			}
