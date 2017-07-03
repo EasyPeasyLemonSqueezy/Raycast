@@ -29,33 +29,27 @@ void main()
 
 	const vec3 delta = ray * (d.z / to_volume);
 	
-	ray.z = min.z;
-
 	vec3 color = vec3(0.0, 0.0, 0.0);
 
 	int layer;
-	for (layer = 0; layer < size.z; ++layer, ray += delta)
+	for (ray.z = max.z, layer = size.z - 1; layer >= 0; --layer, ray -= delta)
 	{
-		int xi = int(round((ray.x - min.x) / d.x));
-		int yi = int(round((ray.y - min.y) / d.y));
-		int zi = int(round((ray.z - min.z) / d.z));
-
-		if (xi >= size.x || xi < 0 ||
-			yi >= size.y || yi < 0 ||
-			zi >= size.z || zi < 0)
-		{
-			break;
+		const int xi = int(round((ray.x - min.x) / d.x));
+		if (xi >= size.x || xi < 0) {
+			continue;
 		}
+
+		const int yi = int(round((ray.y - min.y) / d.y));
+		if (yi >= size.y || yi < 0) {
+			continue;
+		}
+
+		const int zi = int(round((ray.z - min.z) / d.z));
 
 		const int i = (zi * size.x * size.y) + (yi * size.x) + xi;
 		
 		vec4 c = colors[i];
 		color = c.a * c.rgb + color.rgb * (1.0 - c.a);
-
-		if (c.a == 1)
-		{
-			break;
-		}
 	}
 
 	ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
