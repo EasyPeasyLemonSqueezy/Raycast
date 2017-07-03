@@ -5,6 +5,8 @@
 #include <string>
 #include <tuple>
 
+#include <glm\glm.hpp>
+
 class Volume
 {
 public:
@@ -13,7 +15,7 @@ public:
 	std::optional<color> get(float, float, float) const noexcept;
 	header info;
 
-	float* colors;
+	glm::vec4* colors;
 private:
 	color *data;
 };

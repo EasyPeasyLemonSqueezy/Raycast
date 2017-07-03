@@ -4,15 +4,9 @@ layout(local_size_x = 1, local_size_y = 1) in;
 
 layout(rgba32f, binding = 0) uniform image2D image;
 
-struct color
-{
-	float hue;
-	float opacity;
-};
-
 layout (std430, binding = 1) buffer data
 {
-	color colors[];
+	vec4 colors[];
 };
 
 uniform float eyePosition;
@@ -37,7 +31,7 @@ void main()
 	
 	ray.z = min.z;
 
-	float hue = 0;
+	vec3 color = vec3(0.0, 0.0, 0.0);
 
 	int layer;
 	for (layer = 0; layer < size.z; ++layer, ray += delta)
@@ -55,15 +49,17 @@ void main()
 
 		const int i = (zi * size.x * size.y) + (yi * size.x) + xi;
 		
-		color c = color(colors[i].hue, colors[i].opacity);
-		hue = c.hue * c.opacity + hue * (1 - c.opacity);
+		vec4 c = colors[i];
+		color = c.a * c.rgb + color.rgb * (1.0 - c.a);
 
-		if (c.opacity == 1)
+		if (c.a == 1)
 		{
 			break;
 		}
 	}
 
+	const int i = (15 * size.x * size.y) + (int(gl_GlobalInvocationID.y) * size.x) + int(gl_GlobalInvocationID.x);
+
 	ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
-	imageStore(image, pixelCoords, vec4(hue, hue, hue, 1.0));
+	imageStore(image, pixelCoords, colors[i]);
 }

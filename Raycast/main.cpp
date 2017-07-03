@@ -19,7 +19,7 @@ void raycast()
 	
 	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-	Volume volume("D:\\Downloads\\notes_txt\\notes.txt.vd");
+	Volume volume("D:\\Downloads\\notes_txt(1)\\notes.txt.vd");
 	const unsigned int volumeSize = sizeof(float) * volume.info.volume();
 	header info = volume.info;
 
@@ -27,7 +27,7 @@ void raycast()
 	glGenBuffers(1, &buffer);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 2, volume.colors, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.colors, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
 
 	glUniform1f(glGetUniformLocation(computeShader.program, "eyePosition"), -500.0f);

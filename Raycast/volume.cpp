@@ -17,11 +17,15 @@ Volume::Volume(string fname) noexcept
 
 	input.read(reinterpret_cast<char *>(data), sizeof(color) * info.volume());
 
-	colors = new float[info.volume() * 2];
+	colors = new glm::vec4[info.volume() * 2];
 	for (int i = 0; i < info.volume(); i++)
 	{
-		colors[i * 2] = float(data[i].hue) / 255.0f;
-		colors[i * 2 + 1] = data[i].opacity;
+		colors[i] = glm::vec4(
+			float(data[i].r) / 255.0f,
+			float(data[i].r) / 255.0f,
+			float(data[i].r) / 255.0f,
+			data[i].opacity
+		);
 	}
 }
 
