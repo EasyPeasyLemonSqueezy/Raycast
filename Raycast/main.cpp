@@ -19,21 +19,21 @@ void raycast()
 	
 	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-	Volume volume("D:\\Downloads\\notes_txt(1)\\notes.txt.vd");
-	const unsigned int volumeSize = sizeof(float) * volume.info.volume();
+	Volume volume("C:\\Users\\Anton\\Downloads\\notes_2.txt.vd");
+	const uint64_t volumeSize = sizeof(float) * volume.info.volume();
 	header info = volume.info;
 
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.colors, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.data, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
 
 	glUniform1f(glGetUniformLocation(computeShader.program, "eyePosition"), -500.0f);
 	glUniform1f(glGetUniformLocation(computeShader.program, "monitorPosition"), 0.0f);
 	glUniform2i(glGetUniformLocation(computeShader.program, "screen"), SCREEN_WIDTH, SCREEN_HEIGHT);
-	glUniform3i(glGetUniformLocation(computeShader.program, "size"), info.x, info.y, info.z);
+	glUniform3i(glGetUniformLocation(computeShader.program, "size"), static_cast<GLint>(info.x), static_cast<GLint>(info.y), static_cast<GLint>(info.z));
 	glUniform3f(glGetUniformLocation(computeShader.program, "d"), info.d.x, info.d.y, info.d.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "min"), info.min.x, info.min.y, info.min.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "max"), info.max.x, info.max.y, info.max.z);

@@ -7,15 +7,11 @@
 
 #include <glm\glm.hpp>
 
-class Volume
+struct Volume final
 {
-public:
 	Volume(std::string) noexcept;
 	~Volume() noexcept;
-	std::optional<color> get(float, float, float) const noexcept;
-	header info;
 
-	glm::vec4* colors;
-private:
-	color *data;
+	header info;
+	glm::vec4 *data;
 };

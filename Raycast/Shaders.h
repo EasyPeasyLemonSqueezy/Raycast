@@ -52,7 +52,7 @@ public:
 
 		int linkResult = 0;
 
-		// Ошибки
+		// Errors
 		glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
 		if (linkResult == GL_FALSE)
 		{
@@ -92,7 +92,7 @@ private:
 	GLuint createShader(GLenum shaderType, const std::string& shaderName, const std::string& source)
 	{
 		const char* sourcePointer = source.c_str();
-		const int sourceSize = source.size();
+		const int sourceSize = static_cast<int>(source.size());
 
 		GLuint shader = glCreateShader(shaderType);
 		glShaderSource(shader, 1, &sourcePointer, &sourceSize);
@@ -100,7 +100,7 @@ private:
 
 		int compileResult = 0;
 
-		// Ошибки
+		// Errors
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compileResult);
 		if (compileResult == GL_FALSE)
 		{

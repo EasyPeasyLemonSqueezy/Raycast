@@ -158,13 +158,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="alphaBlend.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="alphaBlend.hpp" />
     <ClInclude Include="DebugLog.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Texture.h" />

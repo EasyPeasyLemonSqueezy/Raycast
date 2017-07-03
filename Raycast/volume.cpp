@@ -5,7 +5,6 @@
 
 using namespace std;
 
-#include <iostream>
 
 Volume::Volume(string fname) noexcept
 {
@@ -13,39 +12,25 @@ Volume::Volume(string fname) noexcept
 
 	input.read(reinterpret_cast<char *>(&info), sizeof(header));
 
-	data = new color[info.volume()];
+	auto *raw_data = new color[info.volume()];
+	input.read(reinterpret_cast<char *>(raw_data), sizeof(color) * info.volume());
 
-	input.read(reinterpret_cast<char *>(data), sizeof(color) * info.volume());
+	data = new glm::vec4[info.volume()];
 
-	colors = new glm::vec4[info.volume() * 2];
-	for (int i = 0; i < info.volume(); i++)
-	{
-		colors[i] = glm::vec4(
-			float(data[i].r) / 255.0f,
-			float(data[i].g) / 255.0f,
-			float(data[i].b) / 255.0f,
-			data[i].opacity
+	for (int i = 0; i < info.volume(); ++i) {
+#pragma warning(suppress: 6385)
+		data[i] = glm::vec4(
+			raw_data[i].r / 255.0f,
+			raw_data[i].g / 255.0f,
+			raw_data[i].b / 255.0f,
+			raw_data[i].opacity
 		);
 	}
+
+	delete[] raw_data;
 }
 
 Volume::~Volume() noexcept
 {
 	delete[] data;
-}
-
-optional<color> Volume::get(float xc, float yc, float zc) const noexcept
-{
-	auto xi = static_cast<uint64_t>(round((xc - info.min.x) / info.d.x)),
-	     yi = static_cast<uint64_t>(round((yc - info.min.y) / info.d.y)),
-	     zi = static_cast<uint64_t>(round((zc - info.min.z) / info.d.z));
-
-	if (xi >= info.x || xi < 0 ||
-		yi >= info.y || yi < 0 ||
-		zi >= info.z || zi < 0) {
-		return {};
-	}
-
-	const size_t i = (zi * info.x * info.y) + (yi * info.x) + xi;
-	return make_optional(data[i]);
 }
