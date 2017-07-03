@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugLog.h" />
+    <ClInclude Include="input.hpp" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="volume.hpp" />

@@ -24,6 +24,7 @@
     <ClInclude Include="DebugLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="input.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
