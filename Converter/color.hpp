@@ -5,6 +5,6 @@
 struct color
 {
 	float opacity;
-	std::uint8_t hue;
+	std::uint8_t r, g, b;
 };
 #pragma pack(pop)

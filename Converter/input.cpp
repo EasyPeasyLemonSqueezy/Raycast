@@ -17,11 +17,16 @@ tuple<voxel *, uint64_t, vec, vec> input(const uint64_t x, const uint64_t y, con
 
 	ifstream in(fs::canonical(fname), ios::in);
 	float xc, yc, zc, opacity;
-	uint32_t hue;
+	uint32_t r, g, b;
 
-	while (in >> xc >> yc >> zc >> hue >> opacity) {
+	while (in >> xc >> yc >> zc >> r >> g >> b >> opacity) {
 		volume[count++] = {
-			{ opacity, static_cast<uint8_t>(hue) },
+			{
+				opacity, 
+				static_cast<uint8_t>(r),
+				static_cast<uint8_t>(g),
+				static_cast<uint8_t>(b)
+			},
 			{ xc, yc, zc }
 		};
 
