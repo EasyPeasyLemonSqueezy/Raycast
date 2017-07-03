@@ -58,8 +58,6 @@ void main()
 		}
 	}
 
-	const int i = (15 * size.x * size.y) + (int(gl_GlobalInvocationID.y) * size.x) + int(gl_GlobalInvocationID.x);
-
 	ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
-	imageStore(image, pixelCoords, colors[i]);
+	imageStore(image, pixelCoords, vec4(color, 1.0));
 }

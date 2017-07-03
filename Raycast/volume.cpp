@@ -22,8 +22,8 @@ Volume::Volume(string fname) noexcept
 	{
 		colors[i] = glm::vec4(
 			float(data[i].r) / 255.0f,
-			float(data[i].r) / 255.0f,
-			float(data[i].r) / 255.0f,
+			float(data[i].g) / 255.0f,
+			float(data[i].b) / 255.0f,
 			data[i].opacity
 		);
 	}
