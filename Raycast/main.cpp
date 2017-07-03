@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 #endif
 
 	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
-	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program, NULL);
+	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program);
 
 	raycast();
 	
