@@ -12,8 +12,8 @@ Volume::Volume(string fname) noexcept
 
 	input.read(reinterpret_cast<char *>(&info), sizeof(header));
 
-	auto *raw_data = new color[info.volume()];
-	input.read(reinterpret_cast<char *>(raw_data), sizeof(color) * info.volume());
+	auto *raw_data = new color_rgba[info.volume()];
+	input.read(reinterpret_cast<char *>(raw_data), sizeof(color_rgba) * info.volume());
 
 	data = new glm::vec4[info.volume()];
 

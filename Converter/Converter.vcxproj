@@ -112,14 +112,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="adjustment.cpp" />
-    <ClCompile Include="input.cpp" />
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="output.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adjustment.hpp" />
     <ClInclude Include="color.hpp" />
+    <ClInclude Include="converter.hpp" />
     <ClInclude Include="header.hpp" />
     <ClInclude Include="input.hpp" />
     <ClInclude Include="io.hpp" />

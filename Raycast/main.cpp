@@ -19,7 +19,7 @@ void raycast()
 	
 	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-	Volume volume("C:\\Users\\Anton\\Downloads\\notes_2.txt.vd");
+	Volume volume("");
 	const uint64_t volumeSize = sizeof(float) * volume.info.volume();
 	header info = volume.info;
 
