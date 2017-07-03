@@ -13,8 +13,7 @@ public:
 	std::optional<color> get(float, float, float) const noexcept;
 	header info;
 
-	float* opacities;
-	float* hues;
+	float* colors;
 private:
 	color *data;
 };

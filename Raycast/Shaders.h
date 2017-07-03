@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include <glew\glew.h>
 #include <freeglut\freeglut.h>

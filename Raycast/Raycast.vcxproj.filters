@@ -10,7 +10,9 @@
     <ClCompile Include="volume.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DebugLog.cpp" />
+    <ClCompile Include="DebugLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders.h">
@@ -25,7 +27,9 @@
     <ClInclude Include="volume.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugLog.h" />
+    <ClInclude Include="DebugLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

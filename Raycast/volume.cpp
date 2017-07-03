@@ -11,20 +11,17 @@ Volume::Volume(string fname) noexcept
 {
 	ifstream input(fname, ios::in | ios::binary);
 
-	// check input
-
 	input.read(reinterpret_cast<char *>(&info), sizeof(header));
 
 	data = new color[info.volume()];
 
 	input.read(reinterpret_cast<char *>(data), sizeof(color) * info.volume());
 
-	opacities = new float[info.volume()];
-	hues = new float[info.volume()];
+	colors = new float[info.volume() * 2];
 	for (int i = 0; i < info.volume(); i++)
 	{
-		opacities[i] = data[i].opacity;
-		hues[i] = float(data[i].hue) / 255.0f;
+		colors[i * 2] = float(data[i].hue) / 255.0f;
+		colors[i * 2 + 1] = data[i].opacity;
 	}
 }
 
