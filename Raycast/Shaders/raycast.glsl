@@ -19,7 +19,7 @@ uniform vec3 max;
 
 void main()
 {
-	const float to_volume = min.z - eyePosition;
+	const float to_volume = max.z - eyePosition;
 	const float to_monitor = monitorPosition - eyePosition;
 
 	const vec2 pixel = gl_GlobalInvocationID.xy - vec2(screen.x / 2, screen.y / 2);
