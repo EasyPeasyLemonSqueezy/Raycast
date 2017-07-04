@@ -149,7 +149,7 @@ void createMenu()
 	glutAddMenuEntry("Open converted file", 0);
 	glutAddMenuEntry("Convert and open ha", 1);
 	glutAddMenuEntry("Convert and open rgba", 2);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);
+	glutAttachMenu(GLUT_LEFT_BUTTON);
 }
 
 int main(int argc, char* argv[])
