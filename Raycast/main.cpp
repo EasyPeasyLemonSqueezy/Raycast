@@ -5,10 +5,16 @@
 #include <chrono>
 #include <iostream>
 
+#include <windows.h>
+#include <direct.h>
+#include <Commdlg.h>
+
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
+
+char fileName[MAX_PATH];
 
 Texture* texture;
 
@@ -19,7 +25,7 @@ void raycast()
 	
 	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-	Volume volume("C:\\Users\\Anton\\Downloads\\notes_2.txt.vd");
+	Volume volume(fileName);
 	const uint64_t volumeSize = sizeof(float) * volume.info.volume();
 	header info = volume.info;
 
@@ -61,7 +67,7 @@ void display()
 	glFlush();
 }
 
-int main(int argc, char* argv[])
+void init(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	glutInitContextVersion(3, 3);
@@ -84,6 +90,49 @@ int main(int argc, char* argv[])
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	std::cout << "OpenGL Debug enabled" << std::endl;
 #endif
+}
+
+void menu(int id)
+{
+	if (id == 0)
+	{
+		//TODO: Загружать здесь каждый раз новый файл
+	}
+	glutPostRedisplay();
+}
+
+void createMenu()
+{
+	int menuId = glutCreateMenu(menu);
+	glutAddMenuEntry("Open file", 0);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+int main(int argc, char* argv[])
+{
+	init(argc, argv);
+	
+	createMenu();
+
+	OPENFILENAME ofn;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = fileName;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(fileName);
+	ofn.lpstrFilter = "All\0*.*\0Text\0*.TXT\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	char CWD[MAX_PATH];
+	_getcwd(CWD, MAX_PATH);
+	GetOpenFileName(&ofn);
+	_chdir(CWD);
 
 	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
 	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program);
