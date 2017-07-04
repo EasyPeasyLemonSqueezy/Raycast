@@ -10,7 +10,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	if (argc != 3) {
-		return -1;
+		cout << "Should be only 2 arguments: [rgba|ha] path" << endl;
 	}
 
 	if (argv[1] == "rgba"s) {
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 		convert<color_ha>(argv[2]);
 	}
 	else {
-		return -1;
+		cout << "Unknown color format" << endl;
 	}
 
 	return 0;
