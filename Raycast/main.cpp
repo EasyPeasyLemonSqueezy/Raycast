@@ -1,5 +1,6 @@
 #include <color.hpp>
 #include <converter.hpp>
+#include <color.cpp>
 
 #include "Texture.h"
 #include "DebugLog.h"
