@@ -12,7 +12,6 @@ color_t * adjustment(const std::uint64_t x, const std::uint64_t y, const std::ui
 					 const std::vector<voxel<color_t>> &volume)
 {
 	color_t * result = new color_t[x * y * z](); // zero initialized
-	std::cout << x << ' ' << y << ' ' << z << '\n';
 
 	for (auto &voxel : volume) {
 		const auto xi = static_cast<std::uint64_t>(std::round((voxel.v.x - min.x) / d.x));

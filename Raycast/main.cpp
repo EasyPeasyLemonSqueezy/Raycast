@@ -47,15 +47,15 @@ void raycast(const string &fname)
 	glUniform3f(glGetUniformLocation(computeShader.program, "min"), info.min.x, info.min.y, info.min.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "max"), info.max.x, info.max.y, info.max.z);
 
-	auto start = chrono::steady_clock::now();
+	const auto start = chrono::high_resolution_clock::now();
 
 	glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	auto end = chrono::steady_clock::now();
+	const auto end = chrono::high_resolution_clock::now();
 
-	const auto total = chrono::duration <double, milli>(end - start).count();
-	cout << "time: " << total << endl;
+	const auto total = chrono::duration<double, milli>(end - start).count();
+	cout << "time: " << total << "ms" << endl;
 
 	glDeleteBuffers(1, &buffer);
 }
