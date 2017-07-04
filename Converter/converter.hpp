@@ -37,7 +37,7 @@ void convert(const std::string &fname)
 	std::cout << "Saving result..." << std::endl;
 	output<color_t>(fname, result, { x, y, z, min, max, d, color_t::format() });
 	
-	std::cout << "Done." << std::endl;
+	std::cout << "Done." << std::endl << std::endl;
 
 	delete[] result;
 }
