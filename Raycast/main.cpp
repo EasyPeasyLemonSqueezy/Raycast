@@ -1,3 +1,6 @@
+#include <color.hpp>
+#include <converter.hpp>
+
 #include "Texture.h"
 #include "DebugLog.h"
 #include "volume.hpp"
@@ -56,7 +59,7 @@ void raycast(char fileName[MAX_PATH])
 	glDeleteBuffers(1, &buffer);
 }
 
-void chooseAndDrawImage()
+void chooseAndDrawImage(int id)
 {
 	OPENFILENAME ofn;
 	char fileName[MAX_PATH];
@@ -78,6 +81,22 @@ void chooseAndDrawImage()
 	_getcwd(CWD, MAX_PATH);
 	GetOpenFileName(&ofn);
 	_chdir(CWD);
+
+	string s(fileName);
+
+	if (id != 0)
+	{
+		switch (id)
+		{
+		case 1:
+			convert<color_ha>(s);
+			break;
+		case 2:
+			convert<color_rgba>(s);
+			break;
+		}
+		s += ".vd";
+	}
 
 	raycast(fileName);
 }
@@ -119,17 +138,16 @@ void init(int argc, char* argv[])
 
 void menu(int id)
 {
-	if (id == 0)
-	{
-		chooseAndDrawImage();
-	}
+	chooseAndDrawImage(id);
 	glutPostRedisplay();
 }
 
 void createMenu()
 {
 	int menuId = glutCreateMenu(menu);
-	glutAddMenuEntry("Open file", 0);
+	glutAddMenuEntry("Open converted file", 0);
+	glutAddMenuEntry("Convert and open ha", 1);
+	glutAddMenuEntry("Convert and open rgba", 2);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -142,8 +160,6 @@ int main(int argc, char* argv[])
 	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
 	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program);
 
-	chooseAndDrawImage();
-	
 	glutMainLoop();
 
 	delete texture;
