@@ -57,6 +57,31 @@ void raycast()
 	glDeleteBuffers(1, &buffer);
 }
 
+void chooseAndDrawImage()
+{
+	OPENFILENAME ofn;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = fileName;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(fileName);
+	ofn.lpstrFilter = "All\0*.*\0Text\0*.TXT\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	char CWD[MAX_PATH];
+	_getcwd(CWD, MAX_PATH);
+	GetOpenFileName(&ofn);
+	_chdir(CWD);
+
+	raycast();
+}
+
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -96,7 +121,7 @@ void menu(int id)
 {
 	if (id == 0)
 	{
-		//TODO: Загружать здесь каждый раз новый файл
+		chooseAndDrawImage();
 	}
 	glutPostRedisplay();
 }
@@ -114,30 +139,10 @@ int main(int argc, char* argv[])
 	
 	createMenu();
 
-	OPENFILENAME ofn;
-
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = NULL;
-	ofn.lpstrFile = fileName;
-	ofn.lpstrFile[0] = '\0';
-	ofn.nMaxFile = sizeof(fileName);
-	ofn.lpstrFilter = "All\0*.*\0Text\0*.TXT\0";
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-	char CWD[MAX_PATH];
-	_getcwd(CWD, MAX_PATH);
-	GetOpenFileName(&ofn);
-	_chdir(CWD);
-
 	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
 	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program);
 
-	raycast();
+	chooseAndDrawImage();
 	
 	glutMainLoop();
 
