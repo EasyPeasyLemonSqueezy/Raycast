@@ -8,17 +8,16 @@
 #include <windows.h>
 #include <direct.h>
 #include <Commdlg.h>
+#include <Shellapi.h>
 
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-char fileName[MAX_PATH];
-
 Texture* texture;
 
-void raycast()
+void raycast(char fileName[MAX_PATH])
 {
 	Shader computeShader("Shaders\\raycast.glsl");
 	glUseProgram(computeShader.program);
@@ -60,6 +59,7 @@ void raycast()
 void chooseAndDrawImage()
 {
 	OPENFILENAME ofn;
+	char fileName[MAX_PATH];
 
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
@@ -79,7 +79,7 @@ void chooseAndDrawImage()
 	GetOpenFileName(&ofn);
 	_chdir(CWD);
 
-	raycast();
+	raycast(fileName);
 }
 
 void display()
