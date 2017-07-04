@@ -21,14 +21,14 @@ const int SCREEN_HEIGHT = 1024;
 
 Texture* texture;
 
-void raycast(char fileName[MAX_PATH])
+void raycast(const string &fname)
 {
 	Shader computeShader("Shaders\\raycast.glsl");
 	glUseProgram(computeShader.program);
 	
 	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-	Volume volume(fileName);
+	Volume volume(fname);
 	const uint64_t volumeSize = sizeof(float) * volume.info.volume();
 	header info = volume.info;
 
@@ -71,7 +71,7 @@ void chooseAndDrawImage(int id)
 	ofn.lpstrFile = fileName;
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof(fileName);
-	ofn.lpstrFilter = "All\0*.*\0Text\0*.TXT\0";
+	ofn.lpstrFilter = "All\0*.*\0.txt\0*.TXT\0.vd\0*.VD\0\0";
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
@@ -85,21 +85,18 @@ void chooseAndDrawImage(int id)
 
 	string s(fileName);
 
-	if (id != 0)
-	{
-		switch (id)
-		{
+	if (id != 0) {
+		switch (id) {
 		case 1:
-			convert<color_ha>(s);
-			break;
+			convert<color_ha>(s); break;
 		case 2:
-			convert<color_rgba>(s);
-			break;
+			convert<color_rgba>(s); break;
 		}
+
 		s += ".vd";
 	}
 
-	raycast(fileName);
+	raycast(s);
 }
 
 void display()
