@@ -85,6 +85,10 @@ void chooseAndDrawImage(int id)
 
 	string s(fileName);
 
+	if (s.empty()) {
+		return;
+	}
+
 	if (id != 0) {
 		switch (id) {
 		case 1:
