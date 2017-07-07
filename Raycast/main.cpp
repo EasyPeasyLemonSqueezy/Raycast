@@ -106,36 +106,11 @@ void chooseAndDrawImage(int id)
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(.7f, .0f, 1.f, 1.f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	texture->draw();
 
 	glFlush();
-}
-
-void init(int argc, char* argv[])
-{
-	glutInit(&argc, argv);
-	glutInitContextVersion(3, 3);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutCreateWindow("Volume Ray Casting");
-
-	glutDisplayFunc(display);
-
-	if (glewInit())
-	{
-		cerr << "Unable to initialize GLEW" << endl;
-		exit(EXIT_FAILURE);
-	}
-
-#ifdef _DEBUG
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(debugCallback, NULL);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	std::cout << "OpenGL Debug enabled" << std::endl;
-#endif
 }
 
 void menu(int id)
@@ -151,6 +126,37 @@ void createMenu()
 	glutAddMenuEntry("Convert and open ha", 1);
 	glutAddMenuEntry("Convert and open rgba", 2);
 	glutAttachMenu(GLUT_LEFT_BUTTON);
+}
+
+void reshape(int width, int height)
+{
+	glViewport((width - SCREEN_WIDTH) / 2.0f, (height - SCREEN_HEIGHT) / 2.0f, SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+void init(int argc, char* argv[])
+{
+	glutInit(&argc, argv);
+	glutInitContextVersion(3, 3);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
+	glutInitDisplayMode(GLUT_RGBA);
+	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glutCreateWindow("Volume Ray Casting");
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+
+	if (glewInit())
+	{
+		cerr << "Unable to initialize GLEW" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+#ifdef _DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(debugCallback, NULL);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	std::cout << "OpenGL Debug enabled" << std::endl;
+#endif
 }
 
 int main(int argc, char* argv[])
