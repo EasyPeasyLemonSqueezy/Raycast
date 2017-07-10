@@ -9,13 +9,14 @@ layout (std430, binding = 1) buffer data
 	vec4 colors[];
 };
 
-uniform float eyePosition;
-uniform float monitorPosition;
+uniform vec3 eyePosition;
+uniform vec3 monitorPosition;
 uniform ivec2 screen;
 uniform ivec3 size;
 uniform vec3 d;
 uniform vec3 min;
 uniform vec3 max;
+uniform vec3 normal;
 
 void main()
 {
@@ -26,6 +27,9 @@ void main()
 	
 	vec3 ray = vec3(pixel.x, pixel.y, to_monitor);
 	ray *= to_volume / to_monitor;
+
+	float t = -(dot(eyePosition, normal) + min.z) / dot(ray, normal);
+	vec3 p = eyePosition + t * ray;
 
 	const vec3 delta = ray * (d.z / to_volume);
 	

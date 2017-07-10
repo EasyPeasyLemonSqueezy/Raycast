@@ -14,12 +14,59 @@
 #include <Commdlg.h>
 #include <Shellapi.h>
 
+#include <glm\glm.hpp>
+
+#include <algorithm>
+
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
 Texture* texture;
+
+glm::vec3 closestSide(const Volume& volume)
+{
+	header info = volume.info;
+	vector<float> lengths(6);
+
+	lengths[0] = glm::vec3((info.min.x + info.max.x) / 2, (info.min.y + info.max.y) / 2, info.min.z).length();
+	lengths[1] = glm::vec3((info.min.x + info.max.x) / 2, (info.min.y + info.max.y) / 2, info.max.z).length();
+	lengths[2] = glm::vec3(info.min.x, (info.min.y + info.max.y) / 2, (info.min.z + info.max.z) / 2).length();
+	lengths[3] = glm::vec3(info.max.x, (info.min.y + info.max.y) / 2, (info.min.z + info.max.z) / 2).length();
+	lengths[4] = glm::vec3((info.min.x + info.max.x) / 2, info.min.y, (info.min.z + info.max.z) / 2).length();
+	lengths[5] = glm::vec3((info.min.x + info.max.x) / 2, info.max.y, (info.min.z + info.max.z) / 2).length();
+
+	auto min = std::min(lengths.begin(), lengths.end());
+	int index = std::distance(lengths.begin(), min);
+	//int index = min - lengths.begin();
+
+	glm::vec3 normal;
+
+	switch (index)
+	{
+	case 0:
+		normal = glm::vec3(0, 0, -1);
+		break;
+	case 1:
+		normal = glm::vec3(0, 0, 1);
+		break;
+	case 2:
+		normal = glm::vec3(-1, 0, 0);
+		break;
+	case 3:
+		normal = glm::vec3(1, 0, 0);
+		break;
+	case 4:
+		normal = glm::vec3(0, -1, 0);
+		break;
+	case 5:
+		normal = glm::vec3(0, 1, 0);
+		break;
+	}
+
+	return normal;
+}
 
 void raycast(const string &fname)
 {
@@ -39,13 +86,15 @@ void raycast(const string &fname)
 	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.data, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
 
-	glUniform1f(glGetUniformLocation(computeShader.program, "eyePosition"), -500.0f);
-	glUniform1f(glGetUniformLocation(computeShader.program, "monitorPosition"), 0.0f);
+	glUniform3f(glGetUniformLocation(computeShader.program, "eyePosition"), 0.0f, 0.0f, -500.0f);
+	glUniform3f(glGetUniformLocation(computeShader.program, "monitorPosition"), 0.0f, 0.0f, 0.0f);
 	glUniform2i(glGetUniformLocation(computeShader.program, "screen"), SCREEN_WIDTH, SCREEN_HEIGHT);
 	glUniform3i(glGetUniformLocation(computeShader.program, "size"), static_cast<GLint>(info.x), static_cast<GLint>(info.y), static_cast<GLint>(info.z));
 	glUniform3f(glGetUniformLocation(computeShader.program, "d"), info.d.x, info.d.y, info.d.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "min"), info.min.x, info.min.y, info.min.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "max"), info.max.x, info.max.y, info.max.z);
+	auto normal = closestSide(volume);
+	glUniform3f(glGetUniformLocation(computeShader.program, "normal"), normal.x, normal.y, normal.z);
 
 	const auto start = chrono::high_resolution_clock::now();
 
@@ -131,6 +180,7 @@ void createMenu()
 void reshape(int width, int height)
 {
 	glViewport((width - SCREEN_WIDTH) / 2.0f, (height - SCREEN_HEIGHT) / 2.0f, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 }
 
 void init(int argc, char* argv[])
