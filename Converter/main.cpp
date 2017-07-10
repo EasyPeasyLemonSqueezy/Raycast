@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 {
 	if (argc != 3) {
 		cout << "Should be only 2 arguments: [rgba|ha] path" << endl;
+		return -1;
 	}
 
 	if (argv[1] == "rgba"s) {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 	}
 	else {
 		cout << "Unknown color format" << endl;
+		return -1;
 	}
 
 	return 0;
