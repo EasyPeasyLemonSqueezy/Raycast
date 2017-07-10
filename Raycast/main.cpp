@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include <color.hpp>
 #include <converter.hpp>
 #include <color.cpp>
@@ -8,11 +10,14 @@
 
 #include <chrono>
 #include <iostream>
+#include <cmath> 
 
 #include <windows.h>
 #include <direct.h>
 #include <Commdlg.h>
 #include <Shellapi.h>
+
+#include <glm\gtc\matrix_transform.hpp>
 
 using namespace std;
 
@@ -20,6 +25,17 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
 Texture* texture;
+
+glm::vec3 cameraRotation(float distance, float angleX, float angleY)
+{
+	glm::vec3 cameraPosition;
+
+	cameraPosition.x = distance * -sinf(angleX * (M_PI / 180.0f)) * cosf(angleY * (M_PI / 180.0f));
+	cameraPosition.y = distance * -sinf(angleY * (M_PI / 180.0f));
+	cameraPosition.z = -distance * cosf(angleX * (M_PI / 180.0f)) * cosf(angleY * (M_PI / 180.0f));
+
+	return cameraPosition;
+}
 
 void raycast(const string &fname)
 {
@@ -39,13 +55,18 @@ void raycast(const string &fname)
 	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.data, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
 
-	glUniform1f(glGetUniformLocation(computeShader.program, "eyePosition"), -500.0f);
-	glUniform1f(glGetUniformLocation(computeShader.program, "monitorPosition"), 0.0f);
+	auto camPos = cameraRotation(500.0f, 70.0f, 0.0f);
+	auto rotation = glm::lookAt(camPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glUniform3f(glGetUniformLocation(computeShader.program, "eyePosition"), camPos.x, camPos.y, camPos.z);
+	glUniform1f(glGetUniformLocation(computeShader.program, "eyeDistance"), -500.0f);
+	glUniform1f(glGetUniformLocation(computeShader.program, "monitorDistance"), -300.0f);
 	glUniform2i(glGetUniformLocation(computeShader.program, "screen"), SCREEN_WIDTH, SCREEN_HEIGHT);
 	glUniform3i(glGetUniformLocation(computeShader.program, "size"), static_cast<GLint>(info.x), static_cast<GLint>(info.y), static_cast<GLint>(info.z));
 	glUniform3f(glGetUniformLocation(computeShader.program, "d"), info.d.x, info.d.y, info.d.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "min"), info.min.x, info.min.y, info.min.z);
 	glUniform3f(glGetUniformLocation(computeShader.program, "max"), info.max.x, info.max.y, info.max.z);
+	glUniformMatrix4fv(glGetUniformLocation(computeShader.program, "rotation"), 1, false, &rotation[0][0]);
 
 	const auto start = chrono::high_resolution_clock::now();
 
