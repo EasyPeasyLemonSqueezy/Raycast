@@ -1,85 +1,22 @@
-#define _USE_MATH_DEFINES
-
 #include <color.hpp>
 #include <converter.hpp>
 #include <color.cpp>
 
-#include "Texture.h"
 #include "DebugLog.h"
-#include "volume.hpp"
-
-#include <chrono>
-#include <iostream>
-#include <cmath> 
 
 #include <windows.h>
 #include <direct.h>
 #include <Commdlg.h>
 #include <Shellapi.h>
 
-#include <glm\gtc\matrix_transform.hpp>
+#include "Raycast.h"
 
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-Texture* texture;
-
-glm::vec3 cameraRotation(float distance, float angleX, float angleY)
-{
-	glm::vec3 cameraPosition;
-
-	cameraPosition.x = distance * -sinf(angleX * (M_PI / 180.0f)) * cosf(angleY * (M_PI / 180.0f));
-	cameraPosition.y = distance * -sinf(angleY * (M_PI / 180.0f));
-	cameraPosition.z = -distance * cosf(angleX * (M_PI / 180.0f)) * cosf(angleY * (M_PI / 180.0f));
-
-	return cameraPosition;
-}
-
-void raycast(const string &fname)
-{
-	Shader computeShader("Shaders\\raycast.glsl");
-	glUseProgram(computeShader.program);
-	
-	glBindImageTexture(0, texture->textureId, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
-	Volume volume(fname);
-	const uint64_t volumeSize = sizeof(float) * volume.info.volume();
-	header info = volume.info;
-
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, volumeSize * 4, volume.data, GL_DYNAMIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
-
-	auto camPos = cameraRotation(500.0f, 70.0f, 0.0f);
-	auto rotation = glm::lookAt(camPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glUniform3f(glGetUniformLocation(computeShader.program, "eyePosition"), camPos.x, camPos.y, camPos.z);
-	glUniform1f(glGetUniformLocation(computeShader.program, "eyeDistance"), -500.0f);
-	glUniform1f(glGetUniformLocation(computeShader.program, "monitorDistance"), -300.0f);
-	glUniform2i(glGetUniformLocation(computeShader.program, "screen"), SCREEN_WIDTH, SCREEN_HEIGHT);
-	glUniform3i(glGetUniformLocation(computeShader.program, "size"), static_cast<GLint>(info.x), static_cast<GLint>(info.y), static_cast<GLint>(info.z));
-	glUniform3f(glGetUniformLocation(computeShader.program, "d"), info.d.x, info.d.y, info.d.z);
-	glUniform3f(glGetUniformLocation(computeShader.program, "min"), info.min.x, info.min.y, info.min.z);
-	glUniform3f(glGetUniformLocation(computeShader.program, "max"), info.max.x, info.max.y, info.max.z);
-	glUniformMatrix4fv(glGetUniformLocation(computeShader.program, "rotation"), 1, false, &rotation[0][0]);
-
-	const auto start = chrono::high_resolution_clock::now();
-
-	glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-	const auto end = chrono::high_resolution_clock::now();
-
-	const auto total = chrono::duration<double, milli>(end - start).count();
-	cout << "time: " << total << "ms" << endl;
-
-	glDeleteBuffers(1, &buffer);
-}
+Raycast* raycast;
 
 void chooseAndDrawImage(int id)
 {
@@ -121,17 +58,7 @@ void chooseAndDrawImage(int id)
 		s += ".vd";
 	}
 
-	raycast(s);
-}
-
-void display()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-	texture->draw();
-
-	glFlush();
+	raycast->loadVolume(s);
 }
 
 void menu(int id)
@@ -154,6 +81,23 @@ void reshape(int width, int height)
 	glViewport((width - SCREEN_WIDTH) / 2.0f, (height - SCREEN_HEIGHT) / 2.0f, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
+void update(int time)
+{
+	raycast->raycast();
+	glutPostRedisplay();
+	glutTimerFunc(16, update, 0);
+}
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	raycast->draw();
+
+	glFlush();
+}
+
 void init(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -163,6 +107,7 @@ void init(int argc, char* argv[])
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Volume Ray Casting");
 
+	glutTimerFunc(16, update, 0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 
@@ -183,15 +128,11 @@ void init(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
 	init(argc, argv);
-	
 	createMenu();
 
-	Shader shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
-	texture = new Texture(SCREEN_WIDTH, SCREEN_HEIGHT, shader.program);
+	raycast = new Raycast(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	glutMainLoop();
-
-	delete texture;
 
 	return 0;
 }
