@@ -53,7 +53,7 @@ void main()
 		color += (1 - alpha) * c.a * c.xyz;
 		alpha += (1 - alpha) * c.a;
 
-		if (alpha == 1) {
+		if (alpha >= 1) {
 			break;
 		}
 	}
