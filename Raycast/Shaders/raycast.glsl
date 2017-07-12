@@ -87,9 +87,10 @@ void main()
 	const vec3 delta = ray * (d.z / to_volume);
 
 	vec3 color = vec3(0.0, 0.0, 0.0);
+	float alpha = 0;
 
 	int layer;
-	for (ray = eyePosition + t * ray, layer = size.z - 1; layer >= 0; --layer, ray += delta)
+	for (ray = eyePosition + t * ray, layer = 0; layer < size.z; ++layer, ray += delta)
 	{
 		const int xi = int(round((ray.x - min.x) / d.x));
 		if (xi >= size.x || xi < 0) {
@@ -106,7 +107,13 @@ void main()
 		const int i = (zi * size.x * size.y) + (yi * size.x) + xi;
 
 		vec4 c = colors[i];
-		color = c.a * c.rgb + color.rgb * (1.0 - c.a);
+
+		color += (1 - alpha) * c.a * c.xyz;
+		alpha += (1 - alpha) * c.a;
+
+		if (alpha >= 1) {
+			break;
+		}
 	}
 
 	ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
