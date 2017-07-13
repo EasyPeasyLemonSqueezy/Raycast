@@ -19,8 +19,9 @@ public:
 	void raycast();
 
 	void loadVolume(std::string filename);
+	void updateAngle(glm::vec2 mouseDelta);
 private:
-	glm::vec3 cameraRotation(float distance, float angleX, float angleY);
+	glm::vec3 getCameraPosition(float distance, float angleX, float angleY);
 
 	Volume* volume = nullptr;
 	GLuint buffer;
@@ -28,4 +29,5 @@ private:
 	Shader textureShader = Shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
 	Texture* texture;
 	int screenWidth, screenHeight;
+	glm::vec2 cameraRotation;
 };

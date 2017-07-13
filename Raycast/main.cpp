@@ -17,6 +17,7 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
 Raycast* raycast;
+glm::vec2 mousePosition;
 
 void chooseAndDrawImage(int id)
 {
@@ -98,6 +99,19 @@ void display()
 	glFlush();
 }
 
+void mouseInput(int x, int y)
+{
+	const float mouseSensitivity = 0.25f;
+
+	glm::vec2 mouseDelta = glm::vec2(x, y) - mousePosition;
+	mouseDelta *= mouseSensitivity;
+
+	raycast->updateAngle(mouseDelta);
+
+	mousePosition = glm::vec2(x, y);
+	glutPostRedisplay();
+}
+
 void init(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -110,6 +124,7 @@ void init(int argc, char* argv[])
 	glutTimerFunc(16, update, 0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
+	glutPassiveMotionFunc(mouseInput);
 
 	if (glewInit())
 	{

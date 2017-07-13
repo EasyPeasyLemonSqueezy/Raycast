@@ -36,7 +36,7 @@ void Raycast::raycast()
 
 	header info = volume->info;
 
-	auto camPos = cameraRotation(300.0f, 50.0f, 0.0f);
+	auto camPos = getCameraPosition(300.0f, cameraRotation.x, cameraRotation.y);
 	auto rotation = glm::lookAt(camPos, glm::vec3(0.0f, 50.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glUniform3f(glGetUniformLocation(computeShader.program, "eyePosition"), camPos.x, camPos.y, camPos.z);
@@ -77,7 +77,12 @@ void Raycast::loadVolume(std::string filename)
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer);
 }
 
-glm::vec3 Raycast::cameraRotation(float distance, float angleX, float angleY)
+void Raycast::updateAngle(glm::vec2 mouseDelta)
+{
+	cameraRotation += mouseDelta;
+}
+
+glm::vec3 Raycast::getCameraPosition(float distance, float angleX, float angleY)
 {
 	glm::vec3 cameraPosition;
 
