@@ -16,16 +16,21 @@ public:
 	~Raycast();
 
 	void draw();
-	void raycast();
+	void cast();
 
 	void loadVolume(std::string filename);
 private:
-	glm::vec3 cameraRotation(float distance, float angleX, float angleY);
+	glm::vec3 eye;
+	float distance;
+	glm::vec3 normal;
+	glm::vec3 min, max, d;
+	glm::vec3 _min, _max, _d;
 
-	Volume* volume = nullptr;
+	Volume *volume = nullptr;
 	GLuint buffer;
 	Shader computeShader = Shader("Shaders\\raycast.glsl");
 	Shader textureShader = Shader("Shaders\\vertex.glsl", "Shaders\\fragment.glsl");
-	Texture* texture;
+	Texture *texture;
 	int screenWidth, screenHeight;
+	int closest_side() noexcept;
 };

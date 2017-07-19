@@ -160,13 +160,13 @@
   <ItemGroup>
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Raycast.cpp" />
+    <ClCompile Include="raycast.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugLog.h" />
     <ClInclude Include="input.hpp" />
-    <ClInclude Include="Raycast.h" />
+    <ClInclude Include="raycast.hpp" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="volume.hpp" />

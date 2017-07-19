@@ -10,7 +10,7 @@
     <ClCompile Include="DebugLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Raycast.cpp">
+    <ClCompile Include="raycast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,7 +30,7 @@
     <ClInclude Include="input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Raycast.h">
+    <ClInclude Include="raycast.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

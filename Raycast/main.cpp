@@ -9,14 +9,14 @@
 #include <Commdlg.h>
 #include <Shellapi.h>
 
-#include "Raycast.h"
+#include "raycast.hpp"
 
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 1024;
 
-Raycast* raycast;
+Raycast *raycast;
 
 void chooseAndDrawImage(int id)
 {
@@ -83,7 +83,7 @@ void reshape(int width, int height)
 
 void update(int time)
 {
-	raycast->raycast();
+	raycast->cast();
 	glutPostRedisplay();
 	glutTimerFunc(16, update, 0);
 }
