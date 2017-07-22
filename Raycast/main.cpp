@@ -84,9 +84,10 @@ void reshape(int width, int height)
 
 void update(int time)
 {
+	raycast->updateAngle(glm::vec2(10.0f, 0.0f));
 	raycast->raycast();
 	glutPostRedisplay();
-	glutTimerFunc(16, update, 0);
+	glutTimerFunc(1, update, 0);
 }
 
 void display()
@@ -121,10 +122,10 @@ void init(int argc, char* argv[])
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Volume Ray Casting");
 
-	glutTimerFunc(16, update, 0);
+	glutTimerFunc(1, update, 0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	glutPassiveMotionFunc(mouseInput);
+	//glutPassiveMotionFunc(mouseInput);
 
 	if (glewInit())
 	{
